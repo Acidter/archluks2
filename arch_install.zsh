@@ -1,4 +1,5 @@
 #!/bin/bash
+set -xe
 
 failexit () {
     echo "Fail"; exit
