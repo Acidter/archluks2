@@ -23,7 +23,7 @@ parted /dev/sda -s -- mkpart primary 512B 256MiB
 parted /dev/sda -s -- mkpart primary 256MiB 100%
 
 # Create crypto volume
-echo $vol_pass | cryptsetup -y -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2
+echo $vol_pass | cryptsetup -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2 -d -
 [[ -f /dev/mapper/cryptlvm ]] || failexit
 echo $vol_pass | cryptsetup open /dev/sda2 cryptlvm
 
