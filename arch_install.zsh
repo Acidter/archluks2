@@ -14,8 +14,8 @@ modprobe dm-mod
 modprobe dm-crypt
 
 # Disk
-umount /mnt/boot
-umount /mnt
+umount -q /mnt/boot
+umount -q /mnt
 dd if=/dev/urandom of=/dev/sda bs=1M count=1024
 
 parted /dev/sda -s -- mklabel msdos
