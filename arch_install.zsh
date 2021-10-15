@@ -9,12 +9,16 @@ modprobe dm-mod
 modprobe dm-crypt
 
 # Disk
+umount /mnt/boot
+umount /mnt
+dd if=/dev/urandom of=/dev/sda bs=1M count=1024
+
 parted /dev/sda -s -- mklabel msdos
 parted /dev/sda -s -- mkpart primary 512B 256MiB
-parted /dev/sda -s -- mkpart primary 256MiB 5369MB
+parted /dev/sda -s -- mkpart primary 256MiB 100%
 
 # Create crypto volume
-cryptsetup -y luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2
+cryptsetup -y -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2
 [[ -f /dev/mapper/cryptlvm ]] || failexit
 cryptsetup open /dev/sda2 cryptlvm
 
