@@ -4,6 +4,10 @@ failexit () {
     echo "Fail"; exit
 }
 
+echo -n "Luks2 volume password": 
+read -s vol_pass
+echo $vol_pass
+
 # Kernel modules
 modprobe dm-mod
 modprobe dm-crypt
@@ -18,9 +22,9 @@ parted /dev/sda -s -- mkpart primary 512B 256MiB
 parted /dev/sda -s -- mkpart primary 256MiB 100%
 
 # Create crypto volume
-cryptsetup -y -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2
+echo $vol_pass | cryptsetup -y -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2
 [[ -f /dev/mapper/cryptlvm ]] || failexit
-cryptsetup open /dev/sda2 cryptlvm
+echo $vol_pass | cryptsetup open /dev/sda2 cryptlvm
 
 # LVM
 pvcreate /dev/mapper/cryptlvm
