@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Time and date
 timedatectl set-ntp true
@@ -8,7 +9,7 @@ timedatectl set-timezone Europe/Moscow
 sed -i '/ *#/d; /^ *$/d' /etc/mkinitcpio.conf
 sed -i 's/filesystems/encrypt lvm2 filesystems/' /etc/mkinitcpio.conf
 
-mkinitcpio -p linux
+mkinitcpio -p linux-lts
 
 # Bootloader
 grub-install /dev/sda --force

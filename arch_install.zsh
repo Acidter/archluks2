@@ -5,9 +5,11 @@ failexit () {
     echo "Fail"; exit
 }
 
-echo -n "Luks2 volume password": 
-read -s vol_pass
-echo $vol_pass
+# echo -n "Luks2 volume password": 
+# read -s vol_pass
+# echo $vol_pass
+
+vol_pass=$1
 
 # Kernel modules
 modprobe dm-mod
@@ -23,9 +25,9 @@ parted /dev/sda -s -- mkpart primary 512B 256MiB
 parted /dev/sda -s -- mkpart primary 256MiB 100%
 
 # Create crypto volume
-echo $vol_pass | cryptsetup -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2 -d -
-[[ -f /dev/mapper/cryptlvm ]] || failexit
-echo $vol_pass | cryptsetup open /dev/sda2 cryptlvm
+echo -n $vol_pass | cryptsetup -q luksFormat --type luks2 --pbkdf-memory 256 /dev/sda2 -d -
+echo -n $vol_pass | cryptsetup open /dev/sda2 cryptlvm
+sleep 1 && [[ -L /dev/mapper/cryptlvm ]] || failexit
 
 # LVM
 pvcreate /dev/mapper/cryptlvm
@@ -61,5 +63,9 @@ pacstrap /mnt linux-lts base base-devel lvm2 mkinitcpio grub openssh nano docker
 
 # fstab
 genfstab -pU /mnt >> /mnt/etc/fstab
+
+curl https://raw.githubusercontent.com/Acidter/archluks2/master/system_prepare.sh > /mnt/root/system_prepare.sh
+chmod +x /mnt/root/system_prepare.sh
+arch-chroot /mnt /root/system_prepare.sh
 
 rm -- "$0"
